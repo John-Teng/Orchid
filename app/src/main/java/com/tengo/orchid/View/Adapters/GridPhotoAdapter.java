@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.tengo.orchid.Presenter.PhotosTabDelegate;
+import com.tengo.orchid.Presenter.PhotosDelegate;
 import com.tengo.orchid.R;
 
 /**
@@ -16,48 +16,60 @@ import com.tengo.orchid.R;
 
 public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private PhotosTabDelegate mDelegate;
+    public interface GridPhotoDelegate {
+        void onAddPhoto();
+
+        void onSelectPhoto(int position);
+    }
+
+    private GridPhotoDelegate mFragmentDelegate;
+    private PhotosDelegate mPresenterDelegate;
     private final int ITEM_ADD_PHOTO = 0;
     private final int ITEM_SINGLE_PHOTO = 1;
 
-    public GridPhotoAdapter(PhotosTabDelegate delegate) {
-        mDelegate = delegate;
+    public GridPhotoAdapter(PhotosDelegate presenterDelegate, GridPhotoDelegate fragmentDelegate) {
+        mPresenterDelegate = presenterDelegate;
+        mFragmentDelegate = fragmentDelegate;
     }
 
-    public void setDelegate(@Nullable PhotosTabDelegate delegate) {
-        mDelegate = delegate;
+    public void setFragmentDelegate(@Nullable GridPhotoDelegate delegate) {
+        mFragmentDelegate = delegate;
+    }
+
+    public void setPresenterDelegate(@Nullable PhotosDelegate delegate) {
+        mPresenterDelegate = delegate;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        // TODO add onclicklisteners
         switch (viewType) {
             case ITEM_SINGLE_PHOTO:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item_photo, parent);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item_photo, parent, false);
                 return new GridPhotoViewHolder(view);
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item_add_photo, parent);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item_add_photo, parent, false);
                 return new AddPhotoViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (mDelegate == null) {
+        if (mPresenterDelegate == null) {
             return;
         }
         int viewType = getItemViewType(position);
-
         switch (viewType) {
-            case ITEM_ADD_PHOTO: {
-                GridPhotoViewHolder photoViewHolder = (GridPhotoViewHolder)holder;
-                photoViewHolder.mThumbnail.setImageBitmap(mDelegate.getThumbnail());
+            case ITEM_SINGLE_PHOTO: {
+                GridPhotoViewHolder photoViewHolder = (GridPhotoViewHolder) holder;
+                photoViewHolder.mThumbnail.setImageBitmap(mPresenterDelegate.getThumbnail(position));
+                // Set item position here so that the fragment delegate can reference it
+                photoViewHolder.setItemPosition(position);
                 break;
             }
-            case ITEM_SINGLE_PHOTO: {
-                AddPhotoViewHolder addPhotoViewHolder = (AddPhotoViewHolder)holder;
-                addPhotoViewHolder.mThumbnail.setImageResource(R.drawable.selector);
+            case ITEM_ADD_PHOTO: {
+                AddPhotoViewHolder addPhotoViewHolder = (AddPhotoViewHolder) holder;
+                addPhotoViewHolder.mThumbnail.setImageResource(R.drawable.ic_add);
                 break;
             }
             default: {
@@ -73,18 +85,34 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        if (mDelegate == null) {
+        if (mPresenterDelegate == null) {
             return 0;
         } else {
-            return mDelegate.getListSize();
+            // Add 1 because of the "add photo" button
+            return mPresenterDelegate.getListSize() + 1;
         }
     }
 
     class GridPhotoViewHolder extends RecyclerView.ViewHolder {
         private ImageView mThumbnail;
+        private int mItemPosition;
 
         public GridPhotoViewHolder(View itemView) {
             super(itemView);
+            mThumbnail = (ImageView) itemView.findViewById(R.id.single_photo_thumbnail);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mFragmentDelegate != null) {
+                        mFragmentDelegate.onSelectPhoto(mItemPosition);
+                    }
+
+                }
+            });
+        }
+
+        public void setItemPosition(int position) {
+            mItemPosition = position;
         }
     }
 
@@ -93,6 +121,16 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         public AddPhotoViewHolder(View itemView) {
             super(itemView);
+            mThumbnail = (ImageView) itemView.findViewById(R.id.add_photo_thumbnail);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mFragmentDelegate != null) {
+                        mFragmentDelegate.onAddPhoto();
+                    }
+                }
+            });
         }
     }
+
 }

@@ -57,39 +57,10 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment{
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
-                gallery.setType("image/*");
-                if (gallery.resolveActivity(getContext().getPackageManager()) != null) {
-                    startActivityForResult(gallery, REQUEST_IMAGE_GET);
-                }
+
             }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) {
-            case RESULT_OK: {
-                if (requestCode == REQUEST_IMAGE_GET) {
-                    Uri imageUri = data.getData();
-                    InputStream inputStream;
-                    try {
-//                        mImage.setImageURI(data.getData());
-                        inputStream = getContext().getContentResolver().openInputStream(imageUri);
-                        Bitmap image = BitmapFactory.decodeStream(inputStream);
-                        mImage.setImageBitmap(image);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            }
-            case RESULT_CANCELED:
-                // do something:
-                break;
-            default:
-                //do something:
-                break;
-        }
-    }
+
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/single_photo_thumbnail_width"
     android:layout_height="@dimen/single_photo_thumbnail_width"
     android:orientation="vertical">
@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/single_photo_thumbnail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryLight" />
 
-
-</ConstraintLayout>
+</LinearLayout>
