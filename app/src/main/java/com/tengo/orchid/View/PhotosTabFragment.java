@@ -57,7 +57,8 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
         mPresenter = new PhotosPresenter(getContext());
         mAdapter = new GridPhotoAdapter(mPresenter, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.photos_recyclerview);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUM_COLUMNS));
+        GridLayoutManager gm = new GridLayoutManager(getContext(), NUM_COLUMNS);
+        mRecyclerView.setLayoutManager(gm);
         mRecyclerView.setAdapter(mAdapter);
     }
 
