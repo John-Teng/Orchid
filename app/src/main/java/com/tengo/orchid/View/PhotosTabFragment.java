@@ -62,8 +62,9 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void openSinglePhoto(Bitmap image) {
+    private void openSinglePhoto(int position) {
         Intent intent = new Intent(getContext(), SinglePhotoActivity.class);
+        intent.putExtra("ID", position);
         startActivity(intent);
     }
 
@@ -103,7 +104,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
     @Override
     public void onSelectPhoto(int position) {
         if (mPresenter != null) {
-            openSinglePhoto(mPresenter.getImage(position));
+            openSinglePhoto(position);
         }
     }
 }
