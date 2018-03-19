@@ -62,9 +62,9 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         switch (viewType) {
             case ITEM_SINGLE_PHOTO: {
                 GridPhotoViewHolder photoViewHolder = (GridPhotoViewHolder) holder;
-                photoViewHolder.mThumbnail.setImageBitmap(mPresenterDelegate.getThumbnail(position));
+                photoViewHolder.mThumbnail.setImageBitmap(mPresenterDelegate.getThumbnail(position - 1));
                 // Set item position here so that the fragment delegate can reference it
-                photoViewHolder.setItemPosition(position);
+                photoViewHolder.setItemPosition(position - 1);
                 break;
             }
             case ITEM_ADD_PHOTO: {
@@ -106,7 +106,6 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if (mFragmentDelegate != null) {
                         mFragmentDelegate.onSelectPhoto(mItemPosition);
                     }
-
                 }
             });
         }

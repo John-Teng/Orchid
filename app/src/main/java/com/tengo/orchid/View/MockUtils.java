@@ -2,6 +2,7 @@ package com.tengo.orchid.View;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.support.annotation.NonNull;
 
 import com.tengo.orchid.Model.PhotoThumbnail;
@@ -21,18 +22,18 @@ public class MockUtils {
         if (context == null) {
             return thumbnailList;
         }
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_add_image)));
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_profile)));
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_add_image)));
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_album)));
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_image)));
-        thumbnailList.add(new PhotoThumbnail(BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_take_picture)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p1), 200, 200)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p2), 200, 200)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p3), 200, 200)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p4), 200, 200)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p5), 200, 200)));
+        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.p6), 200, 200)));
 
         return thumbnailList;
     }
