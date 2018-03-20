@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tengo.orchid.Presenter.SinglePhotoPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.SinglePhotoPagerAdapter;
 
@@ -18,6 +19,7 @@ import com.tengo.orchid.View.Adapters.SinglePhotoPagerAdapter;
 public class SinglePhotoFragment extends android.support.v4.app.Fragment {
     private ViewPager mViewPager;
     private SinglePhotoPagerAdapter mAdapter;
+    private SinglePhotoPresenter mPresenter;
 
     @Override
     public void onAttach(Context context) {
@@ -43,8 +45,9 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment {
             return;
         }
 
+        mPresenter = new SinglePhotoPresenter(getContext());
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
-        mAdapter = new SinglePhotoPagerAdapter();
+        mAdapter = new SinglePhotoPagerAdapter(mPresenter);
         mViewPager.setAdapter(mAdapter);
     }
 

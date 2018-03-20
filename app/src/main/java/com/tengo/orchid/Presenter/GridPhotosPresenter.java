@@ -18,10 +18,8 @@ import java.util.List;
 public class GridPhotosPresenter implements GridPhotoAdapter.GridPhotosPresenterDelegate {
 
     private List<PhotoThumbnail> mItems = new ArrayList<>();
-    private Context mContext;
 
     public GridPhotosPresenter(@Nullable Context context) {
-        mContext = context;
         mItems = MockUtils.mockPhotoThumbnails(context);
     }
 
@@ -31,26 +29,6 @@ public class GridPhotosPresenter implements GridPhotoAdapter.GridPhotosPresenter
             return null;
         } else {
             return mItems.get(position).getThumbnail();
-        }
-    }
-
-    @Override
-    public Bitmap getImage(int position) {
-        switch (position) {
-            case 0:
-                return MockUtils.mockP1(mContext);
-            case 1:
-                return MockUtils.mockP2(mContext);
-            case 2:
-                return MockUtils.mockP3(mContext);
-            case 3:
-                return MockUtils.mockP4(mContext);
-            case 4:
-                return MockUtils.mockP5(mContext);
-            case 5:
-                return MockUtils.mockP6(mContext);
-            default:
-                return null;
         }
     }
 

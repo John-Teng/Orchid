@@ -2,6 +2,7 @@ package com.tengo.orchid.View.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.tengo.orchid.Presenter.GridPhotosPresenter;
+import com.tengo.orchid.Presenter.SinglePhotoPresenter;
 import com.tengo.orchid.R;
 
 /**
@@ -17,13 +19,18 @@ import com.tengo.orchid.R;
  */
 
 public class SinglePhotoPagerAdapter extends PagerAdapter {
-    public interface SinglePhotoDelegate {
+
+    public interface SinglePhotoPresenterDelegate {
         Bitmap getImage(int position);
     }
 
-    private GridPhotosPresenter mPresenter;
+    private SinglePhotoPresenterDelegate mPresenter;
 
-    public void setPresenter(GridPhotosPresenter presenter) {
+    public SinglePhotoPagerAdapter(@Nullable SinglePhotoPresenterDelegate presenter) {
+        mPresenter = presenter;
+    }
+
+    public void setPresenter(@Nullable SinglePhotoPresenterDelegate presenter) {
         mPresenter = presenter;
     }
 
