@@ -15,36 +15,29 @@ import com.tengo.orchid.R;
  */
 
 public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public interface GridPhotosPresenterDelegate {
+    public interface GridPhotosDelegate {
+
         Bitmap getThumbnail(int position);
+
+        int getListSize();
 
         int getRating(int position);
 
-        int getListSize();
-    }
-
-    public interface GridPhotosFragmentDelegate {
         void onAddPhoto();
 
         void onSelectPhoto(int position);
     }
 
-    private GridPhotosFragmentDelegate mFragmentDelegate;
-    private GridPhotosPresenterDelegate mPresenterDelegate;
+    private GridPhotosDelegate mDelegate;
     private final int ITEM_ADD_PHOTO = 0;
     private final int ITEM_SINGLE_PHOTO = 1;
 
-    public GridPhotoAdapter(GridPhotosPresenterDelegate presenterDelegate, GridPhotosFragmentDelegate fragmentDelegate) {
-        mPresenterDelegate = presenterDelegate;
-        mFragmentDelegate = fragmentDelegate;
+    public GridPhotoAdapter(GridPhotosDelegate fragmentDelegate) {
+        mDelegate = fragmentDelegate;
     }
 
-    public void setFragmentDelegate(@Nullable GridPhotosFragmentDelegate delegate) {
-        mFragmentDelegate = delegate;
-    }
-
-    public void setPresenterDelegate(@Nullable GridPhotosPresenterDelegate delegate) {
-        mPresenterDelegate = delegate;
+    public void setFragmentDelegate(@Nullable GridPhotosDelegate delegate) {
+        mDelegate = delegate;
     }
 
     @Override
@@ -62,15 +55,16 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (mPresenterDelegate == null) {
+        if (mDelegate == null) {
             return;
         }
         int viewType = getItemViewType(position);
         switch (viewType) {
             case ITEM_SINGLE_PHOTO: {
                 GridPhotoViewHolder photoViewHolder = (GridPhotoViewHolder) holder;
-                photoViewHolder.mThumbnail.setImageBitmap(mPresenterDelegate.getThumbnail(position - 1));
-                // Set item position here so that the fragment delegate can reference it
+                // position - 1 to account for the "add photo" item in the first position
+                photoViewHolder.mThumbnail.setImageBitmap(mDelegate.getThumbnail(position - 1));
+                // Set item position here so that the delegate can reference it
                 photoViewHolder.setItemPosition(position - 1);
                 break;
             }
@@ -92,11 +86,11 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        if (mPresenterDelegate == null) {
+        if (mDelegate == null) {
             return 0;
         } else {
             // Add 1 because of the "add photo" button
-            return mPresenterDelegate.getListSize() + 1;
+            return mDelegate.getListSize() + 1;
         }
     }
 
@@ -110,8 +104,8 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mFragmentDelegate != null) {
-                        mFragmentDelegate.onSelectPhoto(mItemPosition);
+                    if (mDelegate != null) {
+                        mDelegate.onSelectPhoto(mItemPosition);
                     }
                 }
             });
@@ -131,8 +125,8 @@ public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mFragmentDelegate != null) {
-                        mFragmentDelegate.onAddPhoto();
+                    if (mDelegate != null) {
+                        mDelegate.onAddPhoto();
                     }
                 }
             });

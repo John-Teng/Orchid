@@ -1,6 +1,7 @@
 package com.tengo.orchid.View;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -16,10 +17,16 @@ import com.tengo.orchid.View.Adapters.SinglePhotoPagerAdapter;
  * Created by johnteng on 2018-03-10.
  */
 
-public class SinglePhotoFragment extends android.support.v4.app.Fragment {
+public class SinglePhotoFragment extends android.support.v4.app.Fragment
+        implements SinglePhotoPagerAdapter.SinglePhotoDelegate {
+
+    public interface SinglePhotoPresenterDelegate {
+        Bitmap getImage(int position);
+    }
+
     private ViewPager mViewPager;
     private SinglePhotoPagerAdapter mAdapter;
-    private SinglePhotoPresenter mPresenter;
+    private SinglePhotoPresenterDelegate mPresenterDelegate;
 
     @Override
     public void onAttach(Context context) {
@@ -45,11 +52,15 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment {
             return;
         }
 
-        mPresenter = new SinglePhotoPresenter(getContext());
+        mPresenterDelegate = new SinglePhotoPresenter(getContext());
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
-        mAdapter = new SinglePhotoPagerAdapter(mPresenter);
+        mAdapter = new SinglePhotoPagerAdapter(this);
         mViewPager.setAdapter(mAdapter);
     }
 
 
+    @Override
+    public Bitmap getImage(int position) {
+        return mPresenterDelegate.getImage(position);
+    }
 }

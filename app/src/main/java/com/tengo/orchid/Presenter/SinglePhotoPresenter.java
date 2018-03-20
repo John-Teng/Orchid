@@ -4,17 +4,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
-import com.tengo.orchid.View.Adapters.SinglePhotoPagerAdapter;
 import com.tengo.orchid.View.MockUtils;
+import com.tengo.orchid.View.SinglePhotoFragment;
 
 /**
  * Created by johnteng on 2018-03-19.
  */
 
-public class SinglePhotoPresenter implements SinglePhotoPagerAdapter.SinglePhotoPresenterDelegate {
+public class SinglePhotoPresenter implements SinglePhotoFragment.SinglePhotoPresenterDelegate {
     Context mContext;
 
-    public SinglePhotoPresenter(@Nullable Context context){
+    public SinglePhotoPresenter(@Nullable Context context) {
         mContext = context;
     }
 
@@ -40,5 +40,4 @@ public class SinglePhotoPresenter implements SinglePhotoPagerAdapter.SinglePhoto
                 return null;
         }
     }
-
 }

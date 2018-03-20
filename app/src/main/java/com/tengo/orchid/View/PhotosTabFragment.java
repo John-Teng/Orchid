@@ -27,11 +27,20 @@ import static android.app.Activity.RESULT_OK;
  * Created by johnteng on 2018-03-05.
  */
 
-public class PhotosTabFragment extends android.support.v4.app.Fragment implements GridPhotoAdapter.GridPhotosFragmentDelegate {
+public class PhotosTabFragment extends android.support.v4.app.Fragment
+        implements GridPhotoAdapter.GridPhotosDelegate {
+
+    public interface GridPhotosPresenterDelegate {
+        Bitmap getThumbnail(int position);
+
+        int getListSize();
+
+        int getRating(int position);
+    }
 
     private RecyclerView mRecyclerView;
     private GridPhotoAdapter mAdapter;
-    private GridPhotosPresenter mPresenter;
+    private GridPhotosPresenterDelegate mPresenterDelegate;
     private final int REQUEST_IMAGE_GET = 0;
     private final int NUM_COLUMNS = 4;
 
@@ -54,8 +63,8 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
         if (view == null) {
             return;
         }
-        mPresenter = new GridPhotosPresenter(getContext());
-        mAdapter = new GridPhotoAdapter(mPresenter, this);
+        mPresenterDelegate = new GridPhotosPresenter(getContext());
+        mAdapter = new GridPhotoAdapter(this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.photos_recyclerview);
         GridLayoutManager gm = new GridLayoutManager(getContext(), NUM_COLUMNS);
         mRecyclerView.setLayoutManager(gm);
@@ -76,11 +85,9 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
                     Uri imageUri = data.getData();
                     InputStream inputStream;
                     try {
-//                        mImage.setImageURI(data.getData());
                         inputStream = getContext().getContentResolver().openInputStream(imageUri);
                         Bitmap image = BitmapFactory.decodeStream(inputStream);
-                        // Start new activity and send the image bitmap
-                        // mImage.setImageBitmap(image);
+                        // TODO get the presenter to save this image into fs and log in db
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -97,14 +104,27 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
     }
 
     @Override
-    public void onAddPhoto() {
+    public Bitmap getThumbnail(int position) {
+        return mPresenterDelegate.getThumbnail(position);
+    }
 
+    @Override
+    public int getListSize() {
+        return mPresenterDelegate.getListSize();
+    }
+
+    @Override
+    public int getRating(int position) {
+        return mPresenterDelegate.getRating(position);
+    }
+
+    @Override
+    public void onAddPhoto() {
+        // TODO fill this in to add new new photo
     }
 
     @Override
     public void onSelectPhoto(int position) {
-        if (mPresenter != null) {
-            openSinglePhoto(position);
-        }
+        openSinglePhoto(position);
     }
 }

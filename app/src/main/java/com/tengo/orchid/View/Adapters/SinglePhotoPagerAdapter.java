@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.tengo.orchid.Presenter.GridPhotosPresenter;
-import com.tengo.orchid.Presenter.SinglePhotoPresenter;
 import com.tengo.orchid.R;
 
 /**
@@ -20,18 +18,18 @@ import com.tengo.orchid.R;
 
 public class SinglePhotoPagerAdapter extends PagerAdapter {
 
-    public interface SinglePhotoPresenterDelegate {
+    public interface SinglePhotoDelegate {
         Bitmap getImage(int position);
     }
 
-    private SinglePhotoPresenterDelegate mPresenter;
+    private SinglePhotoDelegate mDelegate;
 
-    public SinglePhotoPagerAdapter(@Nullable SinglePhotoPresenterDelegate presenter) {
-        mPresenter = presenter;
+    public SinglePhotoPagerAdapter(@Nullable SinglePhotoDelegate delegate) {
+        mDelegate = delegate;
     }
 
-    public void setPresenter(@Nullable SinglePhotoPresenterDelegate presenter) {
-        mPresenter = presenter;
+    public void setDelegate(@Nullable SinglePhotoDelegate delegate) {
+        mDelegate = delegate;
     }
 
     @Override
@@ -53,8 +51,8 @@ public class SinglePhotoPagerAdapter extends PagerAdapter {
                 false);
         ImageView imageView = (ImageView) viewLayout.findViewById(R.id.single_photo);
 
-        if (mPresenter != null) {
-            imageView.setImageBitmap(mPresenter.getImage(position));
+        if (mDelegate != null) {
+            imageView.setImageBitmap(mDelegate.getImage(position));
         }
 
         return viewLayout;
@@ -65,6 +63,4 @@ public class SinglePhotoPagerAdapter extends PagerAdapter {
         container.removeView((LinearLayout) object);
         object = null;
     }
-
-
 }
