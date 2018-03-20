@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.tengo.orchid.Presenter.PhotosPresenter;
+import com.tengo.orchid.Presenter.GridPhotosPresenter;
 import com.tengo.orchid.R;
 
 /**
@@ -21,9 +21,9 @@ public class SinglePhotoPagerAdapter extends PagerAdapter {
         Bitmap getImage(int position);
     }
 
-    private PhotosPresenter mPresenter;
+    private GridPhotosPresenter mPresenter;
 
-    public void setPresenter(PhotosPresenter presenter) {
+    public void setPresenter(GridPhotosPresenter presenter) {
         mPresenter = presenter;
     }
 

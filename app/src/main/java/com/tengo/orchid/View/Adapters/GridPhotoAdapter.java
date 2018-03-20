@@ -1,5 +1,6 @@
 package com.tengo.orchid.View.Adapters;
 
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.tengo.orchid.Presenter.PhotosDelegate;
 import com.tengo.orchid.R;
 
 /**
@@ -15,28 +15,35 @@ import com.tengo.orchid.R;
  */
 
 public class GridPhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public interface GridPhotosPresenterDelegate {
+        Bitmap getThumbnail(int position);
 
-    public interface GridPhotoDelegate {
+        int getRating(int position);
+
+        int getListSize();
+    }
+
+    public interface GridPhotosFragmentDelegate {
         void onAddPhoto();
 
         void onSelectPhoto(int position);
     }
 
-    private GridPhotoDelegate mFragmentDelegate;
-    private PhotosDelegate mPresenterDelegate;
+    private GridPhotosFragmentDelegate mFragmentDelegate;
+    private GridPhotosPresenterDelegate mPresenterDelegate;
     private final int ITEM_ADD_PHOTO = 0;
     private final int ITEM_SINGLE_PHOTO = 1;
 
-    public GridPhotoAdapter(PhotosDelegate presenterDelegate, GridPhotoDelegate fragmentDelegate) {
+    public GridPhotoAdapter(GridPhotosPresenterDelegate presenterDelegate, GridPhotosFragmentDelegate fragmentDelegate) {
         mPresenterDelegate = presenterDelegate;
         mFragmentDelegate = fragmentDelegate;
     }
 
-    public void setFragmentDelegate(@Nullable GridPhotoDelegate delegate) {
+    public void setFragmentDelegate(@Nullable GridPhotosFragmentDelegate delegate) {
         mFragmentDelegate = delegate;
     }
 
-    public void setPresenterDelegate(@Nullable PhotosDelegate delegate) {
+    public void setPresenterDelegate(@Nullable GridPhotosPresenterDelegate delegate) {
         mPresenterDelegate = delegate;
     }
 

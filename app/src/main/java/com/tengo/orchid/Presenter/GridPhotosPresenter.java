@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
 import com.tengo.orchid.Model.PhotoThumbnail;
+import com.tengo.orchid.View.Adapters.GridPhotoAdapter;
 import com.tengo.orchid.View.MockUtils;
 
 import java.util.ArrayList;
@@ -14,11 +15,12 @@ import java.util.List;
  * Created by johnteng on 2018-03-12.
  */
 
-public class PhotosPresenter implements PhotosDelegate {
+public class GridPhotosPresenter implements GridPhotoAdapter.GridPhotosPresenterDelegate {
+
     private List<PhotoThumbnail> mItems = new ArrayList<>();
     private Context mContext;
 
-    public PhotosPresenter(@Nullable Context context) {
+    public GridPhotosPresenter(@Nullable Context context) {
         mContext = context;
         mItems = MockUtils.mockPhotoThumbnails(context);
     }

@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tengo.orchid.Presenter.PhotosPresenter;
+import com.tengo.orchid.Presenter.GridPhotosPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.GridPhotoAdapter;
 
@@ -27,11 +27,11 @@ import static android.app.Activity.RESULT_OK;
  * Created by johnteng on 2018-03-05.
  */
 
-public class PhotosTabFragment extends android.support.v4.app.Fragment implements GridPhotoAdapter.GridPhotoDelegate {
+public class PhotosTabFragment extends android.support.v4.app.Fragment implements GridPhotoAdapter.GridPhotosFragmentDelegate {
 
     private RecyclerView mRecyclerView;
     private GridPhotoAdapter mAdapter;
-    private PhotosPresenter mPresenter;
+    private GridPhotosPresenter mPresenter;
     private final int REQUEST_IMAGE_GET = 0;
     private final int NUM_COLUMNS = 4;
 
@@ -54,7 +54,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment implement
         if (view == null) {
             return;
         }
-        mPresenter = new PhotosPresenter(getContext());
+        mPresenter = new GridPhotosPresenter(getContext());
         mAdapter = new GridPhotoAdapter(mPresenter, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.photos_recyclerview);
         GridLayoutManager gm = new GridLayoutManager(getContext(), NUM_COLUMNS);
