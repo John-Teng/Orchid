@@ -3,4 +3,8 @@
     <string name="photos_tab">Photos</string>
     <string name="albums_tab">Albums</string>
     <string name="profiles_tab">Profiles</string>
+
+
+    <!--Bundle Param Names-->
+    <string name="param_photo_id">PhotoId</string>
 </resources>

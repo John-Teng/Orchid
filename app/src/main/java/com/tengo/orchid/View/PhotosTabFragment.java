@@ -73,7 +73,10 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
     private void openSinglePhoto(int position) {
         Intent intent = new Intent(getContext(), SinglePhotoActivity.class);
-        intent.putExtra("ID", position);
+        Bundle params = new Bundle();
+        params.putInt(getString(R.string.param_photo_id), position);
+        intent.putExtras(params);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 

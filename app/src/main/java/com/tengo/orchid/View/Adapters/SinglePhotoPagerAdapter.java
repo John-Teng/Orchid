@@ -20,6 +20,8 @@ public class SinglePhotoPagerAdapter extends PagerAdapter {
 
     public interface SinglePhotoDelegate {
         Bitmap getImage(int position);
+
+        int getCount();
     }
 
     private SinglePhotoDelegate mDelegate;
@@ -34,33 +36,33 @@ public class SinglePhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        if (mDelegate == null) {
+            return 0;
+        }
+        return mDelegate.getCount();
     }
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == (LinearLayout) object;
+        return view == object;
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-
         LayoutInflater inflater = (LayoutInflater) container.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View viewLayout = inflater.inflate(R.layout.gallery_photo, container,
+        View viewLayout = inflater.inflate(R.layout.single_photo, container,
                 false);
-        ImageView imageView = (ImageView) viewLayout.findViewById(R.id.single_photo);
-
+        ImageView imageView = (ImageView) viewLayout.findViewById(R.id.photo);
         if (mDelegate != null) {
             imageView.setImageBitmap(mDelegate.getImage(position));
         }
-
+        container.addView(viewLayout);
         return viewLayout;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((LinearLayout) object);
-        object = null;
     }
 }

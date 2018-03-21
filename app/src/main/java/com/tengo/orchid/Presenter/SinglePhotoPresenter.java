@@ -23,6 +23,7 @@ public class SinglePhotoPresenter implements SinglePhotoFragment.SinglePhotoPres
         if (mContext == null) {
             return null;
         }
+        // TODO retrieve the correct image from internal storage
         switch (position) {
             case 0:
                 return MockUtils.mockP1(mContext);
@@ -39,5 +40,11 @@ public class SinglePhotoPresenter implements SinglePhotoFragment.SinglePhotoPres
             default:
                 return null;
         }
+    }
+
+    @Override
+    public int getCount() {
+        // TODO change this to reflect total # of images
+        return 6;
     }
 }

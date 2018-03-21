@@ -7,7 +7,6 @@
         android:id="@+id/add_photo_thumbnail"
         style="@style/grid_photo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryLight" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

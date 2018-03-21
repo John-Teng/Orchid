@@ -14,9 +14,10 @@ public class SinglePhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo);
 
         SinglePhotoFragment fragment = new SinglePhotoFragment();
+        Bundle params = getIntent().getExtras();
+        fragment.setArguments(params);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment_container, fragment);
         ft.commit();
-
     }
 }

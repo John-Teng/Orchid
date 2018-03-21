@@ -22,8 +22,11 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
 
     public interface SinglePhotoPresenterDelegate {
         Bitmap getImage(int position);
+
+        int getCount();
     }
 
+    private static final int NUM_LOADED_IMAGES = 5;
     private ViewPager mViewPager;
     private SinglePhotoPagerAdapter mAdapter;
     private SinglePhotoPresenterDelegate mPresenterDelegate;
@@ -41,7 +44,7 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return null;
+        return inflater.inflate(R.layout.fragment_single_photo, container, false);
     }
 
     @Override
@@ -51,16 +54,26 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         if (view == null) {
             return;
         }
-
         mPresenterDelegate = new SinglePhotoPresenter(getContext());
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
+        mViewPager.setOffscreenPageLimit(NUM_LOADED_IMAGES);
         mAdapter = new SinglePhotoPagerAdapter(this);
         mViewPager.setAdapter(mAdapter);
-    }
 
+        Bundle args = getArguments();
+        if (args != null) {
+            int photoId = args.getInt(getString(R.string.param_photo_id));
+            mViewPager.setCurrentItem(photoId);
+        }
+    }
 
     @Override
     public Bitmap getImage(int position) {
         return mPresenterDelegate.getImage(position);
+    }
+
+    @Override
+    public int getCount() {
+        return mPresenterDelegate.getCount();
     }
 }
