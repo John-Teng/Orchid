@@ -8,6 +8,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.tengo.orchid.Presenter.SinglePhotoPresenter;
 import com.tengo.orchid.R;
@@ -27,6 +29,9 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
     }
 
     private static final int NUM_LOADED_IMAGES = 5;
+    private boolean mShowingInfoView;
+    private ImageView mShowInfoView;
+    private LinearLayout mInfoView;
     private ViewPager mViewPager;
     private SinglePhotoPagerAdapter mAdapter;
     private SinglePhotoPresenterDelegate mPresenterDelegate;
@@ -55,6 +60,15 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
             return;
         }
         mPresenterDelegate = new SinglePhotoPresenter(getContext());
+        mInfoView = (LinearLayout) view.findViewById(R.id.photo_info_view);
+        mShowInfoView = (ImageView) view.findViewById(R.id.photo_show_info);
+        mShowInfoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mInfoView.setVisibility(mShowingInfoView ? View.GONE : View.VISIBLE);
+                mShowingInfoView = !mShowingInfoView;
+            }
+        });
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
         mViewPager.setOffscreenPageLimit(NUM_LOADED_IMAGES);
         mAdapter = new SinglePhotoPagerAdapter(this);

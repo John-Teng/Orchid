@@ -11,14 +11,52 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/photo_top_metabar"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/photo_metabar_height"
+        android:background="@color/colorFadedBlack"
+        android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
     <LinearLayout
+        android:id="@+id/photo_bottom_metabar"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"></LinearLayout>
+        android:layout_height="@dimen/photo_metabar_height"
+        android:background="@color/colorFadedBlack"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <ImageView
+            android:id="@+id/photo_share"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:scaleType="center"
+            android:src="@drawable/ic_add" />
+
+        <ImageView
+            android:id="@+id/photo_show_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:scaleType="center"
+            android:src="@drawable/ic_add_image" />
+
+        <ImageView
+            android:id="@+id/photo_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:scaleType="center"
+            android:src="@drawable/ic_add_image" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/photo_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/photo_info_view_height"
+        android:background="@color/colorFadedBlack"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/photo_bottom_metabar"></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

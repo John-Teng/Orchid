@@ -7,5 +7,6 @@
     <color name="colorGray">#9E9E9E</color>
     <color name="colorDarkGray">#616161</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorFadedBlack">#66000000</color>
     <color name="colorAccent">#FF4081</color>
 </resources>
