@@ -5,4 +5,5 @@
     <dimen name="single_photo_thumbnail_width">75dp</dimen>
     <dimen name="photo_metabar_height">60dp</dimen>
     <dimen name="photo_info_view_height">120dp</dimen>
+    <dimen name="photo_info_view_number_height">50dp</dimen>
 </resources>

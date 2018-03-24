@@ -18,6 +18,12 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
+    <include
+        android:id="@+id/photo_info_view"
+        layout="@layout/single_photo_info_view"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/photo_bottom_metabar" />
+
     <LinearLayout
         android:id="@+id/photo_bottom_metabar"
         android:layout_width="match_parent"
@@ -32,7 +38,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.25"
             android:scaleType="center"
-            android:src="@drawable/ic_add" />
+            android:src="@drawable/ic_share_white" />
 
         <ImageView
             android:id="@+id/photo_show_info"
@@ -40,7 +46,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:scaleType="center"
-            android:src="@drawable/ic_add_image" />
+            android:src="@drawable/ic_arrow_up_white" />
 
         <ImageView
             android:id="@+id/photo_delete"
@@ -48,15 +54,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.25"
             android:scaleType="center"
-            android:src="@drawable/ic_add_image" />
+            android:src="@drawable/ic_delete_white" />
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/photo_info_view"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/photo_info_view_height"
-        android:background="@color/colorFadedBlack"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/photo_bottom_metabar"></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
