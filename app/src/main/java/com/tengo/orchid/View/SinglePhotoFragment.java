@@ -1,6 +1,7 @@
 package com.tengo.orchid.View;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -29,7 +30,7 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
     }
 
     private static final int NUM_LOADED_IMAGES = 5;
-    private boolean mShowingInfoView;
+    private boolean mShowingInfoView = true;
     private ImageView mShowInfoView;
     private View mInfoView;
     private ViewPager mViewPager;
@@ -65,12 +66,7 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         mShowInfoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mShowingInfoView) {
-                    hideInfoView();
-                } else {
-                    showInfoView();
-                }
-                mShowingInfoView = !mShowingInfoView;
+                toggleInfoViewVisibility();
             }
         });
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
@@ -95,60 +91,20 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         return mPresenterDelegate.getCount();
     }
 
-    private void showInfoView() {
-        mInfoView.setVisibility(View.INVISIBLE);
+    private void toggleInfoViewVisibility() {
+        mInfoView.setVisibility(View.VISIBLE);
         mInfoView.animate()
-                .translationY(-1 * mInfoView.getHeight())
-                .alpha(1.0f)
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
+                .translationY(mShowingInfoView ? mInfoView.getHeight() : 0)
+                .alpha(mShowingInfoView ? 0.0f : 1.0f)
+                .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mInfoView.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
+                        super.onAnimationEnd(animation);
+                        mInfoView.setVisibility(mShowingInfoView ? View.GONE : View.VISIBLE);
+                        mShowingInfoView = !mShowingInfoView;
                     }
                 });
         mShowInfoView.animate()
-                .rotationX(180);
-    }
-
-    private void hideInfoView() {
-        mInfoView.animate()
-                .translationY(mInfoView.getHeight())
-                .alpha(0.0f)
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mInfoView.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-        mShowInfoView.animate()
-                .rotationX(0);
+                .rotationX(mShowingInfoView ? 180 : 0);
     }
 }
