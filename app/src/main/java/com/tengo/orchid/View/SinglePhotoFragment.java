@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,6 +32,11 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
     }
 
     private static final int NUM_LOADED_IMAGES = 5;
+    private static final long INFO_VIEW_ANIMATION_SPEED = 200;
+    private static final float SWIPE_MIN_DISTANCE = 25;
+    private static final float SWIPE_MAX_OFF_PATH = 200;
+    private static final float SWIPE_THRESHOLD_VELOCITY = 200;
+
     private boolean mShowingInfoView = true;
     private ImageView mShowInfoView;
     private View mInfoView;
@@ -66,9 +73,10 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         mShowInfoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleInfoViewVisibility();
+                toggleInfoView();
             }
         });
+        setupSwipeListeners();
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
         mViewPager.setOffscreenPageLimit(NUM_LOADED_IMAGES);
         mAdapter = new SinglePhotoPagerAdapter(this);
@@ -81,6 +89,44 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         }
     }
 
+    private void setupSwipeListeners() {
+        final GestureDetector infoViewSwipeDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (Math.abs(e1.getX() - e2.getX()) > SWIPE_MAX_OFF_PATH) {
+                    return false;
+                }
+                // top to bottom swipe
+                if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                    toggleInfoView();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent event) {
+                return false;
+            }
+        });
+        mInfoView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return infoViewSwipeDetector.onTouchEvent(event);
+            }
+        });
+    }
+
     @Override
     public Bitmap getImage(int position) {
         return mPresenterDelegate.getImage(position);
@@ -91,9 +137,17 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         return mPresenterDelegate.getCount();
     }
 
+    private void toggleInfoView() {
+        if (mInfoView.isEnabled()) {
+            toggleInfoViewVisibility();
+        }
+    }
+
     private void toggleInfoViewVisibility() {
         mInfoView.setVisibility(View.VISIBLE);
+        mInfoView.setEnabled(false);
         mInfoView.animate()
+                .setDuration(INFO_VIEW_ANIMATION_SPEED)
                 .translationY(mShowingInfoView ? mInfoView.getHeight() : 0)
                 .alpha(mShowingInfoView ? 0.0f : 1.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -102,6 +156,7 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
                         super.onAnimationEnd(animation);
                         mInfoView.setVisibility(mShowingInfoView ? View.GONE : View.VISIBLE);
                         mShowingInfoView = !mShowingInfoView;
+                        mInfoView.setEnabled(true);
                     }
                 });
         mShowInfoView.animate()
