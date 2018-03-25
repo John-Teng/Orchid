@@ -33,10 +33,9 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
 
     private static final int NUM_LOADED_IMAGES = 5;
     private static final long INFO_VIEW_ANIMATION_SPEED = 200;
-    private static final float SWIPE_MIN_DISTANCE = 25;
     private static final float SWIPE_MAX_OFF_PATH = 200;
+    private static final float SWIPE_MIN_DISTANCE = 25;
     private static final float SWIPE_THRESHOLD_VELOCITY = 200;
-
     private boolean mShowingInfoView = true;
     private ImageView mShowInfoView;
     private View mInfoView;
