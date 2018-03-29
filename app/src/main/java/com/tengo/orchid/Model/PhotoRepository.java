@@ -1,6 +1,7 @@
 package com.tengo.orchid.Model;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.tengo.orchid.Model.ROOM.AppDatabase;
@@ -25,9 +26,8 @@ public class PhotoRepository {
         return mPhotoDao.getAllPhotos();
     }
 
-    // TODO Accesses to ROOM cannot be done on UI thread, use Async Task here
     public void insertPhoto(Photo newPhoto) {
-        mPhotoDao.insert(newPhoto);
+        new insertAsyncTask(mPhotoDao).doInBackground(newPhoto);
     }
 
     public void updatePhoto(Photo updatedPhoto) {
@@ -36,6 +36,21 @@ public class PhotoRepository {
 
     public void deletePhoto(Photo deletePhoto) {
         mPhotoDao.delete(deletePhoto);
+    }
+
+    private static class insertAsyncTask extends AsyncTask<Photo, Void, Void> {
+
+        private PhotoDao mAsyncTaskDao;
+
+        insertAsyncTask(PhotoDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Photo... params) {
+            mAsyncTaskDao.insert(params[0]);
+            return null;
+        }
     }
 
 
