@@ -1,9 +1,9 @@
 package com.tengo.orchid.View;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,8 +17,8 @@ import com.tengo.orchid.Presenter.GridPhotosPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.GridPhotoAdapter;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -36,6 +36,10 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         int getListSize();
 
         int getRating(int position);
+
+        void addPhoto(Uri uri);
+
+        void addPhotos(List<Uri> uris);
     }
 
     private RecyclerView mRecyclerView;
@@ -43,6 +47,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
     private GridPhotosPresenterDelegate mPresenterDelegate;
     private final int REQUEST_IMAGE_GET = 0;
     private final int NUM_COLUMNS = 4;
+    private final String REQUEST_TITLE = "Select Images";
 
     @Override
     public void onAttach(Context context) {
@@ -85,14 +90,17 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         switch (resultCode) {
             case RESULT_OK: {
                 if (requestCode == REQUEST_IMAGE_GET) {
-                    Uri imageUri = data.getData();
-                    InputStream inputStream;
-                    try {
-                        inputStream = getContext().getContentResolver().openInputStream(imageUri);
-                        Bitmap image = BitmapFactory.decodeStream(inputStream);
-                        // TODO get the presenter to save this image into fs and log in db
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                    if (data.getData() != null) {
+                        mPresenterDelegate.addPhoto(data.getData());
+                    } else if (data.getClipData() != null) {
+                        ClipData clipData = data.getClipData();
+                        List<Uri> uriArray = new ArrayList<Uri>();
+                        for (int i = 0; i < clipData.getItemCount(); ++i) {
+                            ClipData.Item item = clipData.getItemAt(i);
+                            Uri uri = item.getUri();
+                            uriArray.add(uri);
+                        }
+                        mPresenterDelegate.addPhotos(uriArray);
                     }
                 }
                 break;
@@ -123,7 +131,12 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
     @Override
     public void onAddPhoto() {
-        // TODO fill this in to add new new photo
+        // TODO after inserting in db, created new view items and add them to adapter
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, REQUEST_TITLE), REQUEST_IMAGE_GET);
     }
 
     @Override

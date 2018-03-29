@@ -17,7 +17,20 @@ import java.util.List;
 public class PhotoRepository {
     private PhotoDao mPhotoDao;
 
-    public PhotoRepository(@NonNull Context context) {
+    private static PhotoRepository sInstance;
+
+    public static PhotoRepository getInstance(@NonNull Context context) {
+        if (sInstance == null) {
+            synchronized (PhotoRepository.class) {
+                if (sInstance == null) {
+                    sInstance = new PhotoRepository(context);
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    private PhotoRepository(@NonNull Context context) {
         AppDatabase db = AppDatabase.getDatabase(context);
         mPhotoDao = db.getPhotoDao();
     }
@@ -27,7 +40,7 @@ public class PhotoRepository {
     }
 
     public void insertPhoto(Photo newPhoto) {
-        new insertAsyncTask(mPhotoDao).doInBackground(newPhoto);
+        new insertAsyncTask(mPhotoDao).execute(newPhoto);
     }
 
     public void updatePhoto(Photo updatedPhoto) {
