@@ -9,7 +9,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity
 public class Photo {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public final int id;
     public final int beautyRating;
     public final int age;
