@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.tengo.orchid.Model.PhotoRepository;
 import com.tengo.orchid.Model.PhotoThumbnail;
@@ -14,7 +13,6 @@ import com.tengo.orchid.View.PhotosTabFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by johnteng on 2018-03-12.
@@ -51,9 +49,8 @@ public class GridPhotosPresenter implements PhotosTabFragment.GridPhotosPresente
 
     @Override
     public void addPhoto(Uri uri) {
-        // TODO find better solution than using rng for photo ids
-        final int random = new Random().nextInt(9999);
-        Photo newPhoto = new Photo(random, 4, 3, uri.toString());
+        // TODO get the correct beauty rating and age nums
+        Photo newPhoto = new Photo(4, 3, uri.toString());
         PhotoRepository.getInstance(mContext).insertPhoto(newPhoto);
     }
 
