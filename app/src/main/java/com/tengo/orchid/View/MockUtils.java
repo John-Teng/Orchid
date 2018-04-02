@@ -21,17 +21,17 @@ public class MockUtils {
         if (context == null) {
             return thumbnailList;
         }
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-1, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p1), 200, 200)));
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-2, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p2), 200, 200)));
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-3, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p3), 200, 200)));
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-4, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p4), 200, 200)));
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-5, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p5), 200, 200)));
-        thumbnailList.add(new PhotoThumbnail(ThumbnailUtils.extractThumbnail(BitmapFactory
+        thumbnailList.add(new PhotoThumbnail(-6, ThumbnailUtils.extractThumbnail(BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.p6), 200, 200)));
 
         return thumbnailList;

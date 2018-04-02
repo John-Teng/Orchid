@@ -3,14 +3,18 @@ package com.tengo.orchid.Presenter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.tengo.orchid.Model.PhotoRepository;
 import com.tengo.orchid.Model.PhotoThumbnail;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
 import com.tengo.orchid.View.MockUtils;
 import com.tengo.orchid.View.PhotosTabFragment;
+import com.tengo.orchid.View.PhotosTabFragment.UICompletionDelegate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +23,19 @@ import java.util.List;
  */
 
 public class GridPhotosPresenter implements PhotosTabFragment.GridPhotosPresenterDelegate {
+    public interface InsertionDelegate {
+        void onPhotoInserted(Photo insertedPhoto);
+    }
 
     private List<PhotoThumbnail> mItems = new ArrayList<>();
     private Context mContext;
 
     public GridPhotosPresenter(@NonNull Context context) {
-        mItems = MockUtils.mockPhotoThumbnails(context);
+        // TODO populate the list with db values
         mContext = context;
+        mItems = MockUtils.mockPhotoThumbnails(mContext);
+//        List<Photo> list = PhotoRepository.getInstance(mContext).getAllPhotos();
+//        mapPhotosToThumbnails(list);
     }
 
     @Override
@@ -42,22 +52,64 @@ public class GridPhotosPresenter implements PhotosTabFragment.GridPhotosPresente
         return 0;
     }
 
+    private void updateThumbnailList(@NonNull List<Photo> newList) {
+        // Figure out the ones we need and add them as PhotoThumbnails
+        boolean match;
+        for (Photo listItem : newList) {
+            match = false;
+            for (PhotoThumbnail thumbnail : mItems) {
+                if (thumbnail.getId() == listItem.id) {
+                    match = true;
+                }
+            }
+            if (match) {
+                continue;
+            } else {
+                addPhotoThumbnailFromPhoto(listItem);
+            }
+            if (mItems.size() == newList.size()) {
+                // If we already added all new items, we can break early
+                break;
+            }
+        }
+    }
+
+    private void addPhotoThumbnailFromPhoto(Photo photo) {
+        try {
+            // Should only be added if the bitmap is accessible
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                    mContext.getContentResolver(), Uri.parse(photo.path));
+            mItems.add(new PhotoThumbnail(photo.id, bitmap));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public int getListSize() {
         return mItems.size();
     }
 
     @Override
-    public void addPhoto(Uri uri) {
+    public void addPhoto(Uri uri, @Nullable final UICompletionDelegate delegate) {
         // TODO get the correct beauty rating and age nums
         Photo newPhoto = new Photo(4, 3, uri.toString());
-        PhotoRepository.getInstance(mContext).insertPhoto(newPhoto);
+        PhotoRepository.getInstance(mContext).insertPhoto(newPhoto, new InsertionDelegate() {
+            @Override
+            public void onPhotoInserted(Photo insertedPhoto) {
+                addPhotoThumbnailFromPhoto(insertedPhoto);
+                if (delegate != null) {
+                    delegate.onCompleted(true);
+                }
+            }
+        });
     }
 
     @Override
-    public void addPhotos(List<Uri> uris) {
+    public void addPhotos(List<Uri> uris, @Nullable UICompletionDelegate UICompletionDelegate) {
+        // TODO make this a batch call, so the UIDelegate doesnt keep calling for adapter refresh
         for (Uri uri : uris) {
-            addPhoto(uri);
+            addPhoto(uri, UICompletionDelegate);
         }
     }
 }

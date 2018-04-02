@@ -30,6 +30,10 @@ import static android.app.Activity.RESULT_OK;
 public class PhotosTabFragment extends android.support.v4.app.Fragment
         implements GridPhotoAdapter.GridPhotosDelegate {
 
+    public interface UICompletionDelegate {
+        void onCompleted(boolean success);
+    }
+
     public interface GridPhotosPresenterDelegate {
         Bitmap getThumbnail(int position);
 
@@ -37,9 +41,9 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
         int getRating(int position);
 
-        void addPhoto(Uri uri);
+        void addPhoto(Uri uri, UICompletionDelegate UICompletionDelegate);
 
-        void addPhotos(List<Uri> uris);
+        void addPhotos(List<Uri> uris, UICompletionDelegate UICompletionDelegate);
     }
 
     private RecyclerView mRecyclerView;
@@ -89,9 +93,15 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case RESULT_OK: {
+                UICompletionDelegate UICompletionDelegate = new UICompletionDelegate() {
+                    @Override
+                    public void onCompleted(boolean success) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                };
                 if (requestCode == REQUEST_IMAGE_GET) {
                     if (data.getData() != null) {
-                        mPresenterDelegate.addPhoto(data.getData());
+                        mPresenterDelegate.addPhoto(data.getData(), UICompletionDelegate);
                     } else if (data.getClipData() != null) {
                         ClipData clipData = data.getClipData();
                         List<Uri> uriArray = new ArrayList<Uri>();
@@ -100,7 +110,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
                             Uri uri = item.getUri();
                             uriArray.add(uri);
                         }
-                        mPresenterDelegate.addPhotos(uriArray);
+                        mPresenterDelegate.addPhotos(uriArray, UICompletionDelegate);
                     }
                 }
                 break;

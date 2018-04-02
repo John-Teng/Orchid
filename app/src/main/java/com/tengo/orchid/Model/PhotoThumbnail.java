@@ -7,12 +7,19 @@ import android.graphics.Bitmap;
  */
 
 public class PhotoThumbnail {
-    private Bitmap mThumbnail;
+    private final int mId;
+    private final Bitmap mThumbnail;
 
-    public PhotoThumbnail(Bitmap thumbnail) {
+    public PhotoThumbnail(int id, Bitmap thumbnail) {
+        mId = id;
         mThumbnail = thumbnail;
     }
+
     public Bitmap getThumbnail() {
         return mThumbnail;
+    }
+
+    public int getId(){
+        return mId;
     }
 }

@@ -10,10 +10,10 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class Photo {
     @PrimaryKey(autoGenerate = true)
-    public final int id = 0;
-    public final int beautyRating;
-    public final int age;
-    public final String path;
+    public int id = 0;
+    public int beautyRating;
+    public int age;
+    public String path;
 
     public Photo(int beautyRating, int age, String path) {
         this.beautyRating = beautyRating;
