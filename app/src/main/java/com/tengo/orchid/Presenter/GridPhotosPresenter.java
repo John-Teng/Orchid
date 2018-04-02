@@ -2,6 +2,8 @@ package com.tengo.orchid.Presenter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -10,6 +12,7 @@ import android.support.annotation.Nullable;
 import com.tengo.orchid.Model.PhotoRepository;
 import com.tengo.orchid.Model.PhotoThumbnail;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
+import com.tengo.orchid.R;
 import com.tengo.orchid.View.MockUtils;
 import com.tengo.orchid.View.PhotosTabFragment;
 import com.tengo.orchid.View.PhotosTabFragment.UICompletionDelegate;
@@ -77,9 +80,9 @@ public class GridPhotosPresenter implements PhotosTabFragment.GridPhotosPresente
     private void addPhotoThumbnailFromPhoto(Photo photo) {
         try {
             // Should only be added if the bitmap is accessible
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                    mContext.getContentResolver(), Uri.parse(photo.path));
-            mItems.add(new PhotoThumbnail(photo.id, bitmap));
+            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(MediaStore.Images.Media.getBitmap(
+                    mContext.getContentResolver(), Uri.parse(photo.path)), 200, 200);
+            mItems.add(new PhotoThumbnail(photo.id, thumbnail));
         } catch (IOException e) {
             e.printStackTrace();
         }
