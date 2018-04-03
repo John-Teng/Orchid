@@ -30,8 +30,8 @@ import static android.app.Activity.RESULT_OK;
 public class PhotosTabFragment extends android.support.v4.app.Fragment
         implements GridPhotoAdapter.GridPhotosDelegate {
 
-    public interface UICompletionDelegate {
-        void onCompleted(boolean success);
+    public interface DataDelegate {
+        void onListDataChanged();
     }
 
     public interface GridPhotosPresenterDelegate {
@@ -41,9 +41,9 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
         int getRating(int position);
 
-        void addPhoto(Uri uri, UICompletionDelegate UICompletionDelegate);
+        void addPhoto(Uri uri);
 
-        void addPhotos(List<Uri> uris, UICompletionDelegate UICompletionDelegate);
+        void addPhotos(List<Uri> uris);
     }
 
     private RecyclerView mRecyclerView;
@@ -72,7 +72,12 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         if (view == null) {
             return;
         }
-        mPresenterDelegate = new GridPhotosPresenter(getContext());
+        mPresenterDelegate = new GridPhotosPresenter(getContext(), new DataDelegate() {
+            @Override
+            public void onListDataChanged() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
         mAdapter = new GridPhotoAdapter(this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.photos_recyclerview);
         GridLayoutManager gm = new GridLayoutManager(getContext(), NUM_COLUMNS);
@@ -93,24 +98,20 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case RESULT_OK: {
-                UICompletionDelegate UICompletionDelegate = new UICompletionDelegate() {
-                    @Override
-                    public void onCompleted(boolean success) {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                };
                 if (requestCode == REQUEST_IMAGE_GET) {
                     if (data.getData() != null) {
-                        mPresenterDelegate.addPhoto(data.getData(), UICompletionDelegate);
+                        getContext().getContentResolver().takePersistableUriPermission(data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        mPresenterDelegate.addPhoto(data.getData());
                     } else if (data.getClipData() != null) {
                         ClipData clipData = data.getClipData();
                         List<Uri> uriArray = new ArrayList<Uri>();
                         for (int i = 0; i < clipData.getItemCount(); ++i) {
                             ClipData.Item item = clipData.getItemAt(i);
                             Uri uri = item.getUri();
+                            getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             uriArray.add(uri);
                         }
-                        mPresenterDelegate.addPhotos(uriArray, UICompletionDelegate);
+                        mPresenterDelegate.addPhotos(uriArray);
                     }
                 }
                 break;
@@ -144,7 +145,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         // TODO after inserting in db, created new view items and add them to adapter
         Intent intent = new Intent();
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, REQUEST_TITLE), REQUEST_IMAGE_GET);
     }

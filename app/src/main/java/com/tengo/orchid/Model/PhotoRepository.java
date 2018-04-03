@@ -8,10 +8,7 @@ import android.support.annotation.Nullable;
 import com.tengo.orchid.Model.ROOM.AppDatabase;
 import com.tengo.orchid.Model.ROOM.DAOs.PhotoDao;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
-import com.tengo.orchid.Presenter.GridPhotosPresenter.InsertionDelegate;
-import com.tengo.orchid.View.PhotosTabFragment.UICompletionDelegate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +16,14 @@ import java.util.List;
  */
 
 public class PhotoRepository {
+
+    public interface PhotoAddedDelegate {
+        void onPhotoInserted(Photo insertedPhoto);
+    }
+
+    public interface RetrievePhotosDelegate {
+        void onPhotosRetrieved(List<Photo> photos);
+    }
 
     public interface dbQueryDelegate {
         void getPhotos(List<Photo> list);
@@ -44,27 +49,25 @@ public class PhotoRepository {
         mPhotoDao = db.getPhotoDao();
     }
 
-    public List<Photo> getAllPhotos() {
-        final List<Photo> photoList = new ArrayList<>();
+    public void getAllPhotos(@NonNull final RetrievePhotosDelegate delegate) {
         new retrieveAsyncTask(mPhotoDao, new dbQueryDelegate() {
             @Override
             public void getPhotos(List<Photo> list) {
-                photoList.addAll(list);
+                delegate.onPhotosRetrieved(list);
             }
         }).execute();
-        return photoList;
     }
 
-    public void insertPhoto(Photo newPhoto, @Nullable InsertionDelegate insertionDelegate) {
-        new insertAsyncTask(mPhotoDao, insertionDelegate).execute(newPhoto);
+    public void insertPhoto(Photo newPhoto, @Nullable PhotoAddedDelegate PhotoAddedDelegate) {
+        new insertAsyncTask(mPhotoDao, PhotoAddedDelegate).execute(newPhoto);
     }
 
-    public void updatePhoto(Photo updatedPhoto, @Nullable UICompletionDelegate delegate) {
+    public void updatePhoto(Photo updatedPhoto) {
         // TODO wrap this in an asynctask object
         mPhotoDao.update(updatedPhoto);
     }
 
-    public void deletePhoto(Photo deletePhoto, @Nullable UICompletionDelegate delegate) {
+    public void deletePhoto(Photo deletePhoto) {
         // TODO wrap this in an asynctask object
         mPhotoDao.delete(deletePhoto);
     }
@@ -93,11 +96,11 @@ public class PhotoRepository {
 
     private static class insertAsyncTask extends AsyncTask<Photo, Void, Photo> {
         private PhotoDao mAsyncTaskDao;
-        private InsertionDelegate mInsertionDelegate;
+        private PhotoAddedDelegate mPhotoAddedDelegate;
 
-        insertAsyncTask(PhotoDao dao, @Nullable InsertionDelegate insertionDelegate) {
+        insertAsyncTask(PhotoDao dao, @Nullable PhotoAddedDelegate PhotoAddedDelegate) {
             mAsyncTaskDao = dao;
-            mInsertionDelegate = insertionDelegate;
+            mPhotoAddedDelegate = PhotoAddedDelegate;
         }
 
         @Override
@@ -112,8 +115,8 @@ public class PhotoRepository {
                 // TODO handle this case
                 return;
             }
-            if (mInsertionDelegate != null) {
-                mInsertionDelegate.onPhotoInserted(newPhoto);
+            if (mPhotoAddedDelegate != null) {
+                mPhotoAddedDelegate.onPhotoInserted(newPhoto);
             }
         }
     }
