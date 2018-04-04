@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.GestureDetector;
@@ -14,19 +16,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.tengo.orchid.Model.DataChangedDelegate;
 import com.tengo.orchid.Presenter.SinglePhotoPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.SinglePhotoPagerAdapter;
+
+import java.io.IOException;
 
 /**
  * Created by johnteng on 2018-03-10.
  */
 
 public class SinglePhotoFragment extends android.support.v4.app.Fragment
-        implements SinglePhotoPagerAdapter.SinglePhotoDelegate {
+        implements SinglePhotoPagerAdapter.SinglePhotoDelegate, DataChangedDelegate {
 
     public interface SinglePhotoPresenterDelegate {
-        Bitmap getImage(int position);
+        String getImage(int position);
 
         int getCount();
     }
@@ -36,7 +41,9 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
     private static final float SWIPE_MAX_OFF_PATH = 200;
     private static final float SWIPE_MIN_DISTANCE = 25;
     private static final float SWIPE_THRESHOLD_VELOCITY = 200;
+    private boolean mShownFirstImage = false;
     private boolean mShowingInfoView = true;
+    private int mFirstImageId;
     private ImageView mShowInfoView;
     private View mInfoView;
     private ViewPager mViewPager;
@@ -66,7 +73,7 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         if (view == null) {
             return;
         }
-        mPresenterDelegate = new SinglePhotoPresenter(getContext());
+        mPresenterDelegate = new SinglePhotoPresenter(getContext(), this);
         mInfoView = view.findViewById(R.id.photo_info_view);
         mShowInfoView = (ImageView) view.findViewById(R.id.photo_show_info);
         mShowInfoView.setOnClickListener(new View.OnClickListener() {
@@ -79,12 +86,10 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
         mViewPager.setOffscreenPageLimit(NUM_LOADED_IMAGES);
         mAdapter = new SinglePhotoPagerAdapter(this);
-        mViewPager.setAdapter(mAdapter);
 
         Bundle args = getArguments();
         if (args != null) {
-            int photoId = args.getInt(getString(R.string.param_photo_id));
-            mViewPager.setCurrentItem(photoId);
+            mFirstImageId = args.getInt(getString(R.string.param_photo_id));
         }
     }
 
@@ -128,7 +133,15 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
 
     @Override
     public Bitmap getImage(int position) {
-        return mPresenterDelegate.getImage(position);
+        String uriString = mPresenterDelegate.getImage(position);
+        Bitmap image = null;
+        try {
+             image = MediaStore.Images.Media.getBitmap(
+                    getContext().getContentResolver(), Uri.parse(uriString));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
     @Override
@@ -160,5 +173,16 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
                 });
         mShowInfoView.animate()
                 .rotationX(mShowingInfoView ? 180 : 0);
+    }
+
+    @Override
+    public void onDataChanged() {
+        if (!mShownFirstImage) {
+            mShownFirstImage = true;
+            mViewPager.setAdapter(mAdapter);
+            mViewPager.setCurrentItem(mFirstImageId);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

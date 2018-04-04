@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tengo.orchid.Model.DataChangedDelegate;
 import com.tengo.orchid.Presenter.GridPhotosPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.GridPhotoAdapter;
@@ -28,16 +29,12 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class PhotosTabFragment extends android.support.v4.app.Fragment
-        implements GridPhotoAdapter.GridPhotosDelegate {
-
-    public interface DataDelegate {
-        void onListDataChanged();
-    }
+        implements GridPhotoAdapter.GridPhotosDelegate, DataChangedDelegate {
 
     public interface GridPhotosPresenterDelegate {
         Bitmap getThumbnail(int position);
 
-        int getListSize();
+        int getItemCount();
 
         int getRating(int position);
 
@@ -72,12 +69,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         if (view == null) {
             return;
         }
-        mPresenterDelegate = new GridPhotosPresenter(getContext(), new DataDelegate() {
-            @Override
-            public void onListDataChanged() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+        mPresenterDelegate = new GridPhotosPresenter(getContext(), this);
         mAdapter = new GridPhotoAdapter(this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.photos_recyclerview);
         GridLayoutManager gm = new GridLayoutManager(getContext(), NUM_COLUMNS);
@@ -132,7 +124,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
     @Override
     public int getListSize() {
-        return mPresenterDelegate.getListSize();
+        return mPresenterDelegate.getItemCount();
     }
 
     @Override
@@ -153,5 +145,10 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
     @Override
     public void onSelectPhoto(int position) {
         openSinglePhoto(position);
+    }
+
+    @Override
+    public void onDataChanged() {
+        mAdapter.notifyDataSetChanged();
     }
 }

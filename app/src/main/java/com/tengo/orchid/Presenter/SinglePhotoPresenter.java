@@ -1,50 +1,61 @@
 package com.tengo.orchid.Presenter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
-import com.tengo.orchid.View.MockUtils;
-import com.tengo.orchid.View.SinglePhotoFragment;
+import com.tengo.orchid.Model.DataChangedDelegate;
+import com.tengo.orchid.Model.PhotoRepository;
+import com.tengo.orchid.Model.PhotoRepository.RetrievePhotosDelegate;
+import com.tengo.orchid.Model.ROOM.Entities.Photo;
+import com.tengo.orchid.View.SinglePhotoFragment.SinglePhotoPresenterDelegate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by johnteng on 2018-03-19.
  */
 
-public class SinglePhotoPresenter implements SinglePhotoFragment.SinglePhotoPresenterDelegate {
-    Context mContext;
+public class SinglePhotoPresenter implements SinglePhotoPresenterDelegate, RetrievePhotosDelegate {
+    private Context mContext;
+    private DataChangedDelegate mDataChangedDelegate;
+    private List<Photo> mPhotos = new ArrayList<>();
 
-    public SinglePhotoPresenter(@Nullable Context context) {
+    public SinglePhotoPresenter(@NonNull Context context, @NonNull DataChangedDelegate delegate) {
         mContext = context;
+        mDataChangedDelegate = delegate;
+        // CACHE REPOSITORY DATA
+        PhotoRepository.getInstance(mContext).getAllPhotos(this);
     }
 
     @Override
-    public Bitmap getImage(int position) {
-        if (mContext == null) {
+    public String getImage(int position) {
+        if (mContext == null || position > mPhotos.size()) {
             return null;
         }
-        // TODO retrieve the correct image from internal storage
-        switch (position) {
-            case 0:
-                return MockUtils.mockP1(mContext);
-            case 1:
-                return MockUtils.mockP2(mContext);
-            case 2:
-                return MockUtils.mockP3(mContext);
-            case 3:
-                return MockUtils.mockP4(mContext);
-            case 4:
-                return MockUtils.mockP5(mContext);
-            case 5:
-                return MockUtils.mockP6(mContext);
-            default:
-                return null;
-        }
+        return mPhotos.get(position).path;
     }
 
     @Override
     public int getCount() {
-        // TODO change this to reflect total # of images
-        return 6;
+        return mPhotos.size();
+    }
+
+    @Override
+    public void onPhotosRetrieved(List<Photo> photos) {
+        mPhotos.clear();
+        mPhotos.addAll(photos);
+        // Need to sort this list because "ORDER BY" is broken in room
+        Collections.sort(mPhotos, new Comparator<Photo>() {
+            @Override
+            public int compare(Photo photo, Photo t1) {
+                return photo.id - t1.id;
+            }
+        });
+        if (mDataChangedDelegate != null) {
+            mDataChangedDelegate.onDataChanged();
+        }
     }
 }

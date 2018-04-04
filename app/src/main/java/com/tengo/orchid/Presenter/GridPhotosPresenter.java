@@ -7,14 +7,13 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
+import com.tengo.orchid.Model.DataChangedDelegate;
 import com.tengo.orchid.Model.PhotoRepository;
 import com.tengo.orchid.Model.PhotoRepository.PhotoAddedDelegate;
 import com.tengo.orchid.Model.PhotoRepository.RetrievePhotosDelegate;
 import com.tengo.orchid.Model.PhotoThumbnail;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
-import com.tengo.orchid.View.MockUtils;
 import com.tengo.orchid.View.PhotosTabFragment.GridPhotosPresenterDelegate;
-import com.tengo.orchid.View.PhotosTabFragment.DataDelegate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,14 +26,13 @@ import java.util.List;
 public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAddedDelegate, RetrievePhotosDelegate {
 
     private List<PhotoThumbnail> mItems = new ArrayList<>();
-    private DataDelegate mDataChangedDelegate;
+    private DataChangedDelegate mDataChangedDelegate;
     private Context mContext;
 
-    public GridPhotosPresenter(@NonNull Context context, @NonNull DataDelegate delegate) {
+    public GridPhotosPresenter(@NonNull Context context, @NonNull DataChangedDelegate delegate) {
         // TODO populate the list with db values
         mContext = context;
         mDataChangedDelegate = delegate;
-        mItems = MockUtils.mockPhotoThumbnails(mContext);
         PhotoRepository.getInstance(mContext).getAllPhotos(this);
     }
 
@@ -92,7 +90,7 @@ public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAd
     }
 
     @Override
-    public int getListSize() {
+    public int getItemCount() {
         return mItems.size();
     }
 
@@ -115,7 +113,7 @@ public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAd
     public void onPhotoInserted(Photo insertedPhoto) {
         addThumbnail(insertedPhoto);
         if (mDataChangedDelegate != null) {
-            mDataChangedDelegate.onListDataChanged();
+            mDataChangedDelegate.onDataChanged();
         }
     }
 
@@ -123,7 +121,7 @@ public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAd
     public void onPhotosRetrieved(List<Photo> photos) {
         addThumbnails(photos);
         if (mDataChangedDelegate != null) {
-            mDataChangedDelegate.onListDataChanged();
+            mDataChangedDelegate.onDataChanged();
         }
     }
 }
