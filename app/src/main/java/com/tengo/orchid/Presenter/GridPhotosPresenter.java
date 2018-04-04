@@ -1,21 +1,16 @@
 package com.tengo.orchid.Presenter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.tengo.orchid.Model.DataChangedDelegate;
 import com.tengo.orchid.Model.PhotoRepository;
 import com.tengo.orchid.Model.PhotoRepository.PhotoAddedDelegate;
 import com.tengo.orchid.Model.PhotoRepository.RetrievePhotosDelegate;
-import com.tengo.orchid.Model.PhotoThumbnail;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
 import com.tengo.orchid.View.PhotosTabFragment.GridPhotosPresenterDelegate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,62 +20,22 @@ import java.util.List;
 
 public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAddedDelegate, RetrievePhotosDelegate {
 
-    private List<PhotoThumbnail> mItems = new ArrayList<>();
+    private List<Photo> mItems = new ArrayList<>();
     private DataChangedDelegate mDataChangedDelegate;
     private Context mContext;
 
     public GridPhotosPresenter(@NonNull Context context, @NonNull DataChangedDelegate delegate) {
-        // TODO populate the list with db values
         mContext = context;
         mDataChangedDelegate = delegate;
         PhotoRepository.getInstance(mContext).getAllPhotos(this);
     }
 
-    private void addThumbnail(Photo photo) {
-        try {
-            // Should only be added if the bitmap is accessible
-            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(MediaStore.Images.Media.getBitmap(
-                    mContext.getContentResolver(), Uri.parse(photo.path)), 200, 200);
-            mItems.add(new PhotoThumbnail(photo.id, thumbnail));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addThumbnails(@NonNull List<Photo> photoList) {
-        for (Photo photo : photoList) {
-            addThumbnail(photo);
-        }
-    }
-
-    private void updateThumbnailList(@NonNull List<Photo> newList) {
-        // Figure out the ones we need and add them as PhotoThumbnails
-        boolean match;
-        for (Photo listItem : newList) {
-            match = false;
-            for (PhotoThumbnail thumbnail : mItems) {
-                if (thumbnail.getId() == listItem.id) {
-                    match = true;
-                }
-            }
-            if (match) {
-                continue;
-            } else {
-                addThumbnail(listItem);
-            }
-            if (mItems.size() == newList.size()) {
-                // If we already added all new items, we can break early
-                break;
-            }
-        }
-    }
-
     @Override
-    public Bitmap getThumbnail(int position) {
+    public String getThumbnail(int position) {
         if (position > mItems.size() - 1) {
             return null;
         } else {
-            return mItems.get(position).getThumbnail();
+            return mItems.get(position).path;
         }
     }
 
@@ -111,7 +66,7 @@ public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAd
 
     @Override
     public void onPhotoInserted(Photo insertedPhoto) {
-        addThumbnail(insertedPhoto);
+        mItems.add(insertedPhoto);
         if (mDataChangedDelegate != null) {
             mDataChangedDelegate.onDataChanged();
         }
@@ -119,7 +74,8 @@ public class GridPhotosPresenter implements GridPhotosPresenterDelegate, PhotoAd
 
     @Override
     public void onPhotosRetrieved(List<Photo> photos) {
-        addThumbnails(photos);
+        mItems.clear();
+        mItems.addAll(photos);
         if (mDataChangedDelegate != null) {
             mDataChangedDelegate.onDataChanged();
         }

@@ -4,8 +4,10 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import com.tengo.orchid.Presenter.GridPhotosPresenter;
 import com.tengo.orchid.R;
 import com.tengo.orchid.View.Adapters.GridPhotoAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +35,7 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
         implements GridPhotoAdapter.GridPhotosDelegate, DataChangedDelegate {
 
     public interface GridPhotosPresenterDelegate {
-        Bitmap getThumbnail(int position);
+        String getThumbnail(int position);
 
         int getItemCount();
 
@@ -119,7 +122,15 @@ public class PhotosTabFragment extends android.support.v4.app.Fragment
 
     @Override
     public Bitmap getThumbnail(int position) {
-        return mPresenterDelegate.getThumbnail(position);
+        String uriString = mPresenterDelegate.getThumbnail(position);
+        Bitmap thumbnail = null;
+        try {
+            thumbnail = ThumbnailUtils.extractThumbnail(MediaStore.Images.Media.getBitmap(
+                    getContext().getContentResolver(), Uri.parse(uriString)), 200, 200);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return thumbnail;
     }
 
     @Override
