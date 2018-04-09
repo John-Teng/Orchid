@@ -86,11 +86,12 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
         mViewPager = (ViewPager) view.findViewById(R.id.single_photo_viewpager);
         mViewPager.setOffscreenPageLimit(NUM_LOADED_IMAGES);
         mAdapter = new SinglePhotoPagerAdapter(this);
-
+        mViewPager.setAdapter(mAdapter);
         Bundle args = getArguments();
         if (args != null) {
             mFirstImageId = args.getInt(getString(R.string.param_photo_id));
         }
+        onDataChanged();
     }
 
     private void setupSwipeListeners() {
@@ -177,12 +178,14 @@ public class SinglePhotoFragment extends android.support.v4.app.Fragment
 
     @Override
     public void onDataChanged() {
-        if (!mShownFirstImage) {
-            mShownFirstImage = true;
-            mViewPager.setAdapter(mAdapter);
-            mViewPager.setCurrentItem(mFirstImageId);
-        } else {
-            mAdapter.notifyDataSetChanged();
+        if (mAdapter == null) {
+            return;
         }
+        if (!mShownFirstImage && mPresenterDelegate.getCount() > 0) {
+            // We only want to perform FirstImage logic if all the images are loaded
+            mShownFirstImage = true;
+            mViewPager.setCurrentItem(mFirstImageId, false);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 }

@@ -9,6 +9,7 @@ import com.tengo.orchid.Model.ROOM.AppDatabase;
 import com.tengo.orchid.Model.ROOM.DAOs.PhotoDao;
 import com.tengo.orchid.Model.ROOM.Entities.Photo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ public class PhotoRepository {
     }
 
     private PhotoDao mPhotoDao;
+    private final List<Photo> mPhotos = new ArrayList<>();
+    private boolean mUpdateNeeded = true;
 
     private static PhotoRepository sInstance;
 
@@ -50,15 +53,23 @@ public class PhotoRepository {
     }
 
     public void getAllPhotos(@NonNull final RetrievePhotosDelegate delegate) {
-        new retrieveAsyncTask(mPhotoDao, new dbQueryDelegate() {
-            @Override
-            public void getPhotos(List<Photo> list) {
-                delegate.onPhotosRetrieved(list);
-            }
-        }).execute();
+        if (mUpdateNeeded) {
+            mUpdateNeeded = false;
+            new retrieveAsyncTask(mPhotoDao, new dbQueryDelegate() {
+                @Override
+                public void getPhotos(List<Photo> list) {
+                    mPhotos.clear();
+                    mPhotos.addAll(list);
+                    delegate.onPhotosRetrieved(list);
+                }
+            }).execute();
+        } else {
+            delegate.onPhotosRetrieved(mPhotos);
+        }
     }
 
     public void insertPhoto(Photo newPhoto, @Nullable PhotoAddedDelegate PhotoAddedDelegate) {
+        mUpdateNeeded = true;
         new insertAsyncTask(mPhotoDao, PhotoAddedDelegate).execute(newPhoto);
     }
 
